@@ -1,4 +1,3 @@
-
 import abcEconomics as abce
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -91,16 +90,16 @@ def main(simulation_parameters):
         node_size_2 = int((agents[1].return_quantity_of_good()[0][0]) * 0.1)
 
         node_sizes = [node_size_1, node_size_2]
-
+        print(node_sizes)
         #Update weight size to reflect money transferred
         G.add_edge(buyer,seller, weight=(total_cost*100))
 
         #label the edges
         labels = {(buyer,seller):total_cost}
-
+        plt.clf()
         #plot the graphs
         plt.title("100,000 products sold by seller")
-        nx.draw_networkx(G, pos=nx.get_node_attributes(G,'Position'), node_size=node_sizes, with_labels=True)
+        nx.draw_networkx(G, pos=nx.get_node_attributes(G,'Position'),node_list=[buyer, seller], node_size=node_sizes, with_labels=True)
 
         nx.draw_networkx_edge_labels(G,pos=nx.get_node_attributes(G,'Position'),edge_labels=labels,font_size=30)
         
