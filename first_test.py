@@ -4,45 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import pylab
+import names
+
+from agent import Agent
+import agent
 
 simulation_parameters = {'name': 'name',
                          'trade_logging': 'off',
                          'random_seed': None,
                          'rounds': 10}
-
-class Agent(abce.Agent):
-    def init(self,family_name,money,products):
-        self.family_name = family_name
-        self.create('money', money)
-        self.create('clothes', products)
-
-    def buy_goods(self,agent_id):
-        self.buy(('agent', agent_id), good='clothes', quantity=10000, price=1)
-
-    def sell_goods(self):
-        for offer in self.get_offers('clothes'):
-            if offer.price >= 0 and self['clothes'] > 0:
-                self.accept(offer)
-                return offer.price * offer.quantity
-            else:
-                return -1
-    def print_possessions(self):
-        print('    ' + self.family_name + str(dict(self.possessions())))
- 
-    def get_name(self):
-       return self.family_name
-
-    def return_quantity_of_good(self):
-        return self['clothes']
-
-    def return_curr_money(self):
-        return self['money']
-
-def get_fig(G,agents):
-    node_sizes = [agents[0].return_quantity_of_good()[0][0],agents[1].return_quantity_of_good()[0][0]]
-    print(node_sizes)
-
-    nx.draw_networkx(G, pos=nx.get_node_attributes(G,'Position'), node_size=node_sizes, with_labels=True)
 
 def main(simulation_parameters):
     
@@ -50,9 +20,25 @@ def main(simulation_parameters):
 
     total_cost = 0
 
+    num_agents = 2
+
+    names = list(range(0, num_agents))
+    money = random.sample(range(1, 50), num_agents) 
+    good2 = random.sample(range(1, 50), num_agents)
+    good3 = random.sample(range(1,50), num_agents)
+
+    #print(names.get_first_name())
+
+    params = agent.build_agent_parameters(num_agents,names,'money',
+                                money,'food', good2, 'other', good3)
+
+    #agents = test_sim.build_agents(Agent, 'agent', agent_parameters=params)
+
     agents = test_sim.build_agents(Agent, 'agent',
-                                 agent_parameters=[{'family_name': 'buyer', 'money': 100000,'products': 0}, 
-                                                   {'family_name': 'seller','money': 0,'products': 100000}])
+                             agent_parameters=[{'family_name': 'buyer', 'money': 100000,'food': 0}, 
+                                               {'family_name': 'seller','money': 0,'food': 100000}])
+
+    agents[0].print_possessions()
 
     buyer = agents[0].get_name()[0][0]
     seller = agents[1].get_name()[0][0]
@@ -75,9 +61,9 @@ def main(simulation_parameters):
         test_sim.advance_round(r)
         r += 1
 
-        agents[0].buy_goods(1)
+        agents[0].buy_goods(1,0)
         
-        cost = agents[1].sell_goods()[0]
+        cost = agents[1].sell_goods(0)[0]
 
         #Ugly but ends the loop when the transactions are no longer possible
         if cost[0] == -1:
