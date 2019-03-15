@@ -65,6 +65,3 @@ def build_agent_parameters(num_agents, names, good1_name, good_1,
     return agent_list
 
 
-
-
-

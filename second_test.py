@@ -5,6 +5,7 @@ import numpy as np
 import random
 import pylab
 import names
+import pandas as pd
 
 from agent import Agent
 import agent
@@ -30,6 +31,7 @@ def main(simulation_parameters):
     params = agent.build_agent_parameters(num_agents,names,'money',
                                money,'food', good2, 'other', good3)
 
+    print(params)
     agents = test_sim.build_agents(Agent, 'agent', agent_parameters=params)
 
     num_edges = 2*num_agents
@@ -68,6 +70,9 @@ def main(simulation_parameters):
 
         #Add edge between them
         G.add_edge(buyer,seller)
+
+  
+        print(G.nodes())
 
         #Print
         nx.draw_networkx(G, pos=nx.get_node_attributes(G,'Position'), node_size=(node_sizes))
