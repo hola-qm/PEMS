@@ -18,9 +18,7 @@ One round equals one day.
 
 Each day, all the agents must buy food. 
 
-Each month, all the agents must buy clothes.
-
-Each year, all the agents must buy plumbing.
+Each week, all the agents must buy raw materials.
 
 For each purchase, there is an option:
 	-Buy from local vendor (other agent)
@@ -34,6 +32,7 @@ import random
 import pylab
 import pandas as pd
 import sys
+import csv
 
 from agent import Agent
 import agent
@@ -44,8 +43,12 @@ import graph
 
 def main():
 
+	chance_raw_outside = 0.88
+	chance_raw_inside = 1 - chance_raw_outside
+	chance_food_inside = 0.83
+	chance_food_outside = 1 - chance_food_inside
 
-	test_sim = abce.Simulation(name='quipu_sim', processes=1)
+	test_sim = abce.Simulation(name='quipu_sim', processes=1,  trade_logging='off')
 
 	num_agents = 5
 	walmart_size = 1000
@@ -135,19 +138,19 @@ def main():
 	plt.close()
 	#end of loop
 	test_sim.finalize()
-
+	test_sim.graphs()
 	r_list = list(range(0,num_rounds))
 
-	f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharex=True, figsize=(15,5))
-	ax1.plot(r_list,money_over_time,'r',label='money over time')
-	ax2.plot(r_list,food_over_time,'b',label='food over time')
-	ax3.plot(r_list,quipus_over_time,'g',label='quipus over time')
-	ax1.legend(loc='best')
-	ax2.legend(loc='best')
-	ax3.legend(loc='best')
-	plt.show()
-	plt.pause(5)
-	plt.close('all')
+	# f, (ax1, ax2, ax3) = plt.subplots(1, 3, sharex=True, figsize=(15,5))
+	# ax1.plot(r_list,money_over_time,'r',label='money over time')
+	# ax2.plot(r_list,food_over_time,'b',label='food over time')
+	# ax3.plot(r_list,quipus_over_time,'g',label='quipus over time')
+	# ax1.legend(loc='best')
+	# ax2.legend(loc='best')
+	# ax3.legend(loc='best')
+	# plt.show()
+	# plt.pause(5)
+	# plt.close('all')
 	sys.exit()
 
 if __name__ == '__main__':

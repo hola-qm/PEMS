@@ -18,27 +18,11 @@
 var margin = {top: 16, right: 0, bottom: 0, left: 0},
     width = 950 - margin.left - margin.right,
     height = 700 - margin.top - margin.bottom;
-    middle = {x: width/2, y: height/2}
-    
+
 var node_radius = 5,
     padding = 1,
     cluster_padding = 10,
-    num_nodes = 5;
-
-var test_agent_one = [5,5,5]
-var test_agent_two = [6,3,2]
-
-// Get initial starting points
-// var i;
-// var angle = 360/num_nodes
-// var coords = []
-
-//   for (i = 0; i < num_nodes; i++) { 
-//     coords.push(circle_x_y(150,angle))
-//     angle += 360/num_nodes  
-//   }
-// console.log(coords[0])
-// console.log(JSON.stringify(coords[0]))
+    num_nodes = 200;
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -47,93 +31,23 @@ var svg = d3.select("#chart").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Foci
-
-// var i
-// var angle = 360/num_nodes
-// var radius = 150
-// var foci = []
-//   for (i = 0; i < num_nodes; i++) { 
-//     key = "pos" + i
-//     var temp = key: { x: x(radius,angle), y: y(radius,angle), color: "green" }
-//     console.log(temp)
-//     angle += 360/num_nodes  
-//   }
-// console.log(foci)
 var foci = {
-    "toppos": { x: 225, y: 450, color: "green" },
-    "leftpos": { x: 225, y: 300, color: "#29bf10" },
-    "rightpos": { x: 725, y: 300, color: "#23cdc7" },
-    "bottompos": { x: 475, y: 450},
+	"toppos": { x: 475, y: 150, color: "#cc5efa" },
+	"leftpos": { x: 225, y: 300, color: "#29bf10" }, 
+	"rightpos": { x: 725, y: 300, color: "#23cdc7" },
+    "bottompos": { x: 475, y: 450, color: "#eb494f" },
 };
 
-function x(radius, angle) {
-
-  x = middle.x + radius * Math.sin(angle)
-  return x
-}
-
-function y(radius, angle) {
-
-  y = middle.y + radius * Math.cos(angle)
-  return y
-}
-  
 // Create node objects
 var nodes = d3.range(0, num_nodes).map(function(o, i) {
 	return {
-		id: "Agent 1",
+		id: "node" + i,
 		x: foci.toppos.x + Math.random(),
 		y: foci.toppos.y + Math.random(),
 		radius: node_radius,
 		choice: "toppos",
-    color: "yellow"
 	}
 });
-
-var nodes1 = d3.range(0, num_nodes).map(function(o, i) {
-  return {
-    id: "Agent 2",
-    x: foci.leftpos.x + Math.random(),
-    y: foci.leftpos.y + Math.random(),
-    radius: node_radius,
-    choice: "leftpos",
-    color: "green"
-  }
-});
-
-var nodes2 = d3.range(0, num_nodes).map(function(o, i) {
-  return {
-    id: "Agent 2",
-    x: foci.bottompos.x + Math.random(),
-    y: foci.bottompos.y + Math.random(),
-    radius: node_radius,
-    choice: "bottompos",
-    color: "purple"
-  }
-});
-
-var nodes3 = d3.range(0, num_nodes).map(function(o, i) {
-  return {
-    id: "Agent 2",
-    x: foci.rightpos.x + Math.random(),
-    y: foci.rightpos.y + Math.random(),
-    radius: node_radius,
-    choice: "rightpos",
-    color: "blue"
-  }
-});
-  var i
-  for (i = 0; i < num_nodes; i++) { 
-    nodes.push(nodes1[i])
-    nodes.push(nodes2[i])
-    nodes.push(nodes3[i])
-  }
-
-// var i
-// for(i = 0; i < nodes.length; i++)
-//   console.log(nodes[i].color)
-
-console.log(nodes)
 
 // Force-directed layout
 var force = d3.layout.force()
@@ -145,30 +59,13 @@ var force = d3.layout.force()
 	.on("tick", tick)
 	.start();
     
-
 // Draw circle for each node.
 var circle = svg.selectAll("circle")
 	.data(nodes)
   .enter().append("circle")
 	.attr("id", function(d) { return d.id; })
 	.attr("class", "node")
-	.style("fill", function(d) { return d.color; });    
-
-var text = svg.selectAll("text")
-                        .data(nodes)
-                        .enter()
-                        .append("text");
-
-//Add SVG Text Element Attributes
-var textLabels = text
-                 .attr("x", function(d) { return d.x; })
-                 .attr("y", function(d) { return d.y -20; })
-                 .text( function (d) { return d.id; })
-                 .attr("font-family", "sans-serif")
-                 .attr("font-size", "20px")
-                 .attr("fill", "red");
-
-
+	.style("fill", function(d) { return foci[d.choice].color; });    
 
 // For smoother initial transition to settling spots.
 circle.transition()
@@ -180,21 +77,20 @@ circle.transition()
 	});
 
 
-//Run function periodically to make things move.
+// Run function periodically to make things move.
 var timeout;
 function timer() {
     
     // Random place for a node to go
     var choices = d3.keys(foci);
     var foci_index = Math.floor( Math.random() * choices.length );
-    
     var choice = d3.keys(foci)[foci_index];
     
     // Update random node
     var random_index = Math.floor( Math.random() * nodes.length );
-  	nodes[random_index].cx = foci[choice].x;
-  	nodes[random_index].cy = foci[choice].y;
-  	nodes[random_index].choice = choice;
+	nodes[random_index].cx = foci[choice].x;
+	nodes[random_index].cy = foci[choice].y;
+	nodes[random_index].choice = choice;
     
     force.resume();
     
@@ -203,6 +99,7 @@ function timer() {
 }
 
 timeout = setTimeout(timer, 400);
+
 
 //
 // Force-directed boiler plate functions
@@ -213,7 +110,7 @@ function tick(e) {
   circle
 	.each(gravity(.051 * e.alpha))
   	.each(collide(.5))
-  	.style("fill", function(d) { return d.color; })
+  	.style("fill", function(d) { return foci[d.choice].color; })
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; });
 }
@@ -256,8 +153,8 @@ function collide(alpha) {
     });
   };
 }    
-    
-</script>
 
+
+</script>
 
 </body>

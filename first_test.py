@@ -10,13 +10,13 @@ from agent import Agent
 import agent
 
 simulation_parameters = {'name': 'name',
-                         'trade_logging': 'off',
+                         'trade_logging': 'individual',
                          'random_seed': None,
                          'rounds': 10}
 
 def main(simulation_parameters):
     
-    test_sim = abce.Simulation(name='quipu_sim', processes=1)
+    test_sim = abce.Simulation(name='tony_test', processes=1, trade_logging='individual')
 
     total_cost = 0
 
@@ -56,7 +56,7 @@ def main(simulation_parameters):
     r=0
 
     #Run simulation
-    while (end==False):
+    while (r < 10):
 
         test_sim.advance_round(r)
         r += 1

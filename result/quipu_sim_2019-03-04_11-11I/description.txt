@@ -1,4 +1,0 @@
-{
-    "name": "quipu_sim",
-    "random_seed": 1551715883.2081332
-}

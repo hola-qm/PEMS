@@ -1,0 +1,6 @@
+{
+    "name": "quipu_sim",
+    "random_seed": 1554487815.677991,
+    "agent": {},
+    "corporate": {}
+}

@@ -6,7 +6,7 @@ class Agent(abce.Agent):
         self.family_name = family_name
         self.create('money', money)
         self.create('food', food)
-        #self.create('other', other)
+        self.create('other', other)
 
     def buy_goods(self,agent_id,good):
         if good == 1:
