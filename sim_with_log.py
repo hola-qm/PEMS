@@ -19,7 +19,7 @@ import os
 import csv
 
 
-from agent import Agent
+#from agent import Agent
 import agent
 from outside_agent import Walmart
 from quipu_agent import Quipu_Agent
@@ -41,14 +41,8 @@ def main():
 			starting_money = int(row[4])
 	f.close()
 
-	# chance_raw_outside = 0.88
-	# chance_raw_inside = 1 - chance_raw_outside
-	# chance_food_inside = 0.83
-	# chance_food_outside = 1 - chance_food_inside
+	test_sim = abce.Simulation(name='quipu_sim', processes=1, trade_logging='off')
 
-	test_sim = abce.Simulation(name='quipu_sim', processes=1,  trade_logging='off')
-
-	#num_agents = 39
 	walmart_size = 1000
 	names = list(range(0, num_agents+1))
 	
@@ -57,9 +51,10 @@ def main():
 
 	food = random.sample(range(10, 50), num_agents) 
 	quipu = random.sample(range(5, 45), num_agents) 
+	other = random.sample(range(1,20), num_agents)
 
 	params = agent.build_agent_parameters(num_agents,names,'money',
-							   money,'food', food, 'quipu', quipu)
+							   money,'food', food, 'quipu', quipu, 'other', other)
 
 	agents = test_sim.build_agents(Quipu_Agent, 'agent', agent_parameters=params)
 	walmart = test_sim.build_agents(Walmart, 'corporate', agent_parameters=[{'family_name': 'walmart', 'money': 100, 'food': 100}])
@@ -85,9 +80,9 @@ def main():
 			agents[x].eat_food()
 
 			if action > (chance_food_inside*100):
-				agents[x].buy_goods(0)
+				agents[x].buy_goods(0,0)
 				# Cost = -1 if transaction did not occur
-				cost = walmart[0].sell_goods()[0][0]
+				cost = walmart[0].sell_goods(1)[0][0]
 
 				writer.writerow([transaction_id, x, -1, 'food', 'money', cost])
 
@@ -95,8 +90,8 @@ def main():
 				#Buy from an agent that is not yourself
 				numbers = list(range(0,x)) + list(range(x+1,num_agents))
 				curr = random.choice(numbers)
-				agents[x].buy_goods_with_quipu(curr)
-				cost = agents[curr].sell_goods_with_quipu()[0][0]
+				agents[x].buy_goods_with_quipu(curr,0)
+				cost = agents[curr].sell_goods_with_quipu(0)[0][0]
 
 				writer.writerow([transaction_id, x, curr, 'food', 'quipu', cost])
 
@@ -106,8 +101,8 @@ def main():
 				action = random.randint(0,100)
 
 				if action > (chance_raw_inside*100):
-					agents[x].buy_goods(0)
-					cost = walmart[0].sell_goods()[0][0]
+					agents[x].buy_goods(0,0)
+					cost = walmart[0].sell_goods(0)[0][0]
 
 					writer.writerow([transaction_id, x, -1, 'raw', 'money', cost])
 
@@ -115,13 +110,13 @@ def main():
 				#Buy from an agent that is not yourself
 					numbers = list(range(0,x)) + list(range(x+1,num_agents))
 					curr = random.choice(numbers)
-					agents[x].buy_goods_with_quipu(curr)
-					cost = agents[curr].sell_goods_with_quipu()[0][0]
+					agents[x].buy_goods_with_quipu(curr,1)
+					cost = agents[curr].sell_goods_with_quipu(1)[0][0]
 
 					writer.writerow([transaction_id, x, curr, 'raw', 'quipu', cost])
 
 			transaction_id += 1
-			
+
 	#end of loop
 	ofile.close()
 	test_sim.finalize()
