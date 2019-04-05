@@ -29,16 +29,16 @@ def main():
 
 	# Read in simulation parameters
 	f = open('sim_params_final.csv','r')
-	reader = csv.reader(f)
-	firstline = True
-	for row in reader:
-		if firstline == True:
-			firstline = False
-		else:
-			num_agents = int(row[1])
-			chance_food_inside = float(row[2])
-			chance_raw_inside = float(row[3])
-			starting_money = int(row[4])
+	data = np.array(list(csv.reader(f)))
+	
+	curr_sim = data[1,:]
+	
+	num_agents = int(curr_sim[1])
+	chance_food_inside = float(curr_sim[2])
+	chance_raw_inside = float(curr_sim[3])
+	quipu = int(curr_sim[5])
+	print(quipu)
+
 	f.close()
 
 	test_sim = abce.Simulation(name='quipu_sim', processes=1, trade_logging='off')
@@ -50,21 +50,27 @@ def main():
 	money.append(walmart_size) 
 
 	food = random.sample(range(10, 50), num_agents) 
-	quipu = random.sample(range(5, 45), num_agents) 
+	quipus = random.sample(range(5, 45), num_agents) 
 	other = random.sample(range(1,20), num_agents)
 
 	params = agent.build_agent_parameters(num_agents,names,'money',
-							   money,'food', food, 'quipu', quipu, 'other', other)
+							   money,'food', food, 'quipu', quipus, 'other', other)
 
 	agents = test_sim.build_agents(Quipu_Agent, 'agent', agent_parameters=params)
-	walmart = test_sim.build_agents(Walmart, 'corporate', agent_parameters=[{'family_name': 'walmart', 'money': 100, 'food': 100}])
- 
-	ofile  = open('data.csv', 'w')
+	walmart = test_sim.build_agents(Walmart, 'corporate', agent_parameters=[{'family_name': 'walmart', 'money': 100, 'food': 100, 'other': 100}])
+ 	
+	if quipu == 1:
+		ofile  = open('data_with_quipus.csv', 'w')
+		print("here")
+	else:
+		ofile  = open('data_just_money.csv', 'w')
+		print("here1")
+
 	writer = csv.writer(ofile, delimiter=',')
-	writer.writerow(['Transaction ID', 'Buyer ID', 'Seller ID', 'Type of transaction', 'Currency', 'Cost'])
+	writer.writerow(['Transaction ID', 'Buyer ID', 'Seller ID', 'Type of transaction', 'Currency', 'Failure from Buyer', 'Failure from Seller'])
 
 	r = 0
-	num_rounds = 10
+	num_rounds = 40
 	transaction_id = 0
 
 	while(r < num_rounds):
@@ -80,20 +86,23 @@ def main():
 			agents[x].eat_food()
 
 			if action > (chance_food_inside*100):
-				agents[x].buy_goods(0,0)
-				# Cost = -1 if transaction did not occur
-				cost = walmart[0].sell_goods(1)[0][0]
+				buy = agents[x].buy_goods_from_walmart(0,1)[0][0]
+				
+				sell = walmart[0].walmart_sell_goods(1)[0][0]
 
-				writer.writerow([transaction_id, x, -1, 'food', 'money', cost])
+				writer.writerow([transaction_id, x, -1, 'food', 'money', buy, sell])
 
 			else:
 				#Buy from an agent that is not yourself
 				numbers = list(range(0,x)) + list(range(x+1,num_agents))
 				curr = random.choice(numbers)
-				agents[x].buy_goods_with_quipu(curr,0)
-				cost = agents[curr].sell_goods_with_quipu(0)[0][0]
+				buy = agents[x].buy_goods(curr,0,quipu)[0][0]
+				sell = agents[curr].sell_goods(0,quipu)[0][0]
 
-				writer.writerow([transaction_id, x, curr, 'food', 'quipu', cost])
+				if quipu == 1:
+					writer.writerow([transaction_id, x, curr, 'food', 'quipu', buy, sell])
+				else:
+					writer.writerow([transaction_id, x, curr, 'food', 'money', buy, sell])
 
 			# Buy raw materials 1x per week
 			if r % 7 == 0:
@@ -101,19 +110,22 @@ def main():
 				action = random.randint(0,100)
 
 				if action > (chance_raw_inside*100):
-					agents[x].buy_goods(0,0)
-					cost = walmart[0].sell_goods(0)[0][0]
+					buy = agents[x].buy_goods_from_walmart(0,0)[0][0]
+					sell = walmart[0].walmart_sell_goods(0)[0][0]
 
-					writer.writerow([transaction_id, x, -1, 'raw', 'money', cost])
+					writer.writerow([transaction_id, x, -1, 'raw', 'money', buy, sell])
 
 				else:
 				#Buy from an agent that is not yourself
 					numbers = list(range(0,x)) + list(range(x+1,num_agents))
 					curr = random.choice(numbers)
-					agents[x].buy_goods_with_quipu(curr,1)
-					cost = agents[curr].sell_goods_with_quipu(1)[0][0]
+					buy = agents[x].buy_goods(curr,1,quipu)[0][0]
+					sell = agents[curr].sell_goods(1,quipu)[0][0]
 
-					writer.writerow([transaction_id, x, curr, 'raw', 'quipu', cost])
+					if quipu == 1:
+						writer.writerow([transaction_id, x, curr, 'food', 'quipu', buy, sell])
+					else:
+						writer.writerow([transaction_id, x, curr, 'food', 'money', buy, sell])
 
 			transaction_id += 1
 

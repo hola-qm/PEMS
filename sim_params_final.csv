@@ -1,2 +1,3 @@
-Simulation Number,Num Agents,% chance buying food from inside,% chance buying raw materials from inside,Average starting $
-1,10,0.88,0.27,500
+Simulation Number,Num Agents,% chance buying food from inside,% chance buying raw materials from inside,Average starting $,Quipu ( 1 = Yes Quipus)
+1,10,0.88,0.27,500,1
+2,10,0.88,0.27,500,0

@@ -7,13 +7,14 @@ import abcEconomics as abce
 
 
 class Walmart(abce.Agent):
-    def init(self,family_name,money,food):
+    def init(self,family_name,money,food,other):
         self.family_name = family_name
         self.create('money', money)
         self.create('food', food)
+        self.create('other', other)
 
     # 0 = food, 1 = clothes, 2 = plumbing
-    def sell_goods(self,good):
+    def walmart_sell_goods(self,good):
         if good == 1:
             for offer in self.get_offers('food'):
                 if offer.price >= 0 and self['food'] > 0:
