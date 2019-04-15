@@ -1,15 +1,24 @@
-# QUIPU
+### Quipu Simulation ###
 
-# first update: first_test.py
+This code uses the ABCE economics library to simulate rural economic interactions.
 
-Dependencies: This program relies on installing
-the ABCE economics library
+The current working example is "sim_with_log.py"
 
-It also has additonal libraries needed such as networkx 
-and matplotlib.
+This simulation creates a spreadsheet that logs transactions between local vendors and "Walmart" (a vendor that does not return money to the community)
 
-This program simulates 100,000 purchases of a good by one agent
-from another.
+The current sim allows for buying food and for buying raw materials
 
-TODO: This node size of the seller doesn't seem to update as 
-the goods leave their possession. Currently unsure why. 
+Each day, each vendor eats food. They also buy food, either from inside or outside the community.
+
+Each week, each vendor purchases raw materials from inside or outside.
+
+
+The parameters for the simulation can be set in sim_params_final.csv
+You can set:
+- % chance vendors buy food locally
+- % chance vendors buy raw materials locally
+- Number of vendors
+- Avg. starting money for the vendors
+- Whether, Quipu, the community currency is used
+
+Right now, the sim is set for 40 days.

@@ -60,7 +60,7 @@ def build_agent_parameters(num_agents, names, good1_name, good_1,
     for x in range(num_agents):
         agent_params = {key_name[x]: names[x], key_good1[x]: good_1[x], 
                             key_good2[x]: good_2[x], key_good3[x]: good3[x],
-                            key_good3[x]: good4[x]}
+                            key_good4[x]: good4[x]}
 
         agent_list.append(agent_params)
 
